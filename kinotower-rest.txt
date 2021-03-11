@@ -1,0 +1,921 @@
+Request
+  URL: /api/login
+  Method: POST
+  Header: Authorization: Basic {email password}
+  Body:
+Response
+  # If success
+  Header: Response code: 200
+  Body: {
+    "fio": "someText", 
+    "role": "someText", 
+    "email": "someText",
+    "token": "AUTHORIZATION_TOKEN"
+    }
+  # If user email or password not correct
+  Header: Response code: 401
+  Body: {"message": "Invalid login"}
+
+
+Request
+  URL: /api/users
+  Method: GET
+  Header: 
+  Body:
+Response
+  # If role values is admin
+  Header: 
+    Response code: 200
+  Body: [
+    { 
+    "id": 1,
+    "fio": "John Doe",
+    "birthday": "1998-10-12",
+    "gender": "male",
+    "email": "john.doe@gmail.com",
+    "password": "mynameis John",
+    "role": "user",
+    "createdAt": "2021-01-10",
+    "deletedAt": null 
+  },
+  ...]
+  # If role values is user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+  Request
+  URL: /api/users
+  Method: POST
+  Header: 
+  Body:
+Response
+  # If role values is admin
+  Header: 
+    Response code: 201
+  Body: [
+    { 
+    "id": 2,
+    "fio": "Maria Lapyshkina",
+    "birthday": "1991-10-12",
+    "gender": "female",
+    "email": "marialapyshkina@gmail.com",
+    "password": "lapyshkina1991",
+    "role": "user",
+    "createdAt": "2021-02-10",
+    "deletedAt": null 
+  }, 
+  ...
+  ]
+  # If role values is user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/users/{id}
+  Method: PUT
+  Header: 
+  Body: {
+    ...user,
+    "token": "AUTHORIZATION_TOKEN"
+    }
+Response
+  # If user id from request body equals id from request line
+  Header: 
+    Response code: 201
+  Body: { 
+    "id": 2,
+    "fio": "Maria Lapyshkina",
+    "birthday": "1991-10-12",
+    "gender": "female",
+    "email": "marialapyshkina@gmail.com",
+    "password": "1991lapyshkina",
+    "role": "user",
+    "createdAt": "2021-02-10",
+    "deletedAt": null 
+  }
+  # If user id from request body not equals id from request line
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+  # If user id from request line not found
+  Header: Response code: 404
+  Body: {
+    "message": Not found"
+    }
+
+
+Request
+  URL: /api/users/{id}
+  Method: GET
+  Header: 
+  Body: {
+    ...user,
+    "token": "AUTHORIZATION_TOKEN"
+    }
+Response
+  # If user id from request body equals id from request line
+  Header: 
+    Response code: 200
+  Body: { 
+    "id": 2,
+    "fio": "Maria Lapyshkina",
+    "birthday": "1991-10-12",
+    "gender": "female",
+    "email": "marialapyshkina@gmail.com",
+    "password": "lapyshkina1991",
+    "role": "user",
+    "createdAt": "2021-02-10",
+    "deletedAt": null 
+  }
+  # If user id from request body not equals id from request line
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+  # If user id from request line not found
+  Header: Response code: 404
+  Body: {
+    "message": Not found"
+    }
+
+
+Request
+  URL: /api/users/{id}
+  Method: DELETE
+  Header: 
+  Body: {
+    ...user,
+    "token": "AUTHORIZATION_TOKEN"
+    }
+Response
+  # If role values is admin
+  Header: 
+    Response code: 200
+  Body: { 
+    "id": 2,
+    "fio": "Maria Lapyshkina",
+    "birthday": "1991-10-12",
+    "gender": "female",
+    "email": "marialapyshkina@gmail.com",
+    "password": "1991lapyshkina",
+    "role": "user",
+    "createdAt": "2021-02-10",
+    "deletedAt": null 
+  }
+  # If role values is user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+  # If user id from request line not found
+  Header: Response code: 404
+  Body: {
+    "message": Not found"
+    }
+
+
+Request
+  URL: /api/film/
+  Method: POST
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN
+    "film": {
+      "id": "uuid",
+      "name": "string",
+      "country": "uuid",
+      "duration": "integer",
+      "yearOfIssue": "datetime",
+      "age": "integer",
+      "linkImg": "string",
+      "linkKinopoisk": "string",
+      "linkVideo": "string",
+      "createdAt": "datetime",
+      "deletedAt": "datetime"
+    }
+  }
+Response
+  # If role values is admin
+  Header: 
+    Response code: 201
+  Body: {
+    "id": "uuid",
+    "name": "string",
+    "country": "uuid",
+    "duration": "integer",
+    "yearOfIssue": "datetime",
+    "age": "integer",
+    "linkImg": "string",
+    "linkKinopoisk": "string",
+    "linkVideo": "string",
+    "createdAt": "datetime",
+    "deletedAt": "datetime"
+  }
+  # If role values is user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/film/
+  Method: GET
+  Header: 
+  Body: {"token": AUTHORIZATION_TOKEN}
+Response
+  Header: 
+    Response code: 201
+  Body: [
+  {
+    "id": "uuid",
+    "name": "string",
+    "country": "uuid",
+    "duration": "integer",
+    "yearOfIssue": "datetime",
+    "age": "integer",
+    "linkImg": "string",
+    "linkKinopoisk": "string",
+    "linkVideo": "string",
+    "createdAt": "datetime",
+    "deletedAt": "datetime"
+  },
+  ...]
+
+
+Request
+  URL: /api/film/{id}
+  Method: GET
+  Header: 
+  Body: {"token": AUTHORIZATION_TOKEN}
+Response
+  Header: 
+    Response code: 201
+  Body: {
+    "id": "uuid",
+    "name": "string",
+    "country": "uuid",
+    "duration": "integer",
+    "yearOfIssue": "datetime",
+    "age": "integer",
+    "linkImg": "string",
+    "linkKinopoisk": "string",
+    "linkVideo": "string",
+    "createdAt": "datetime",
+    "deletedAt": "datetime"
+  }
+
+
+Request
+  URL: /api/film/{id}
+  Method: PUT
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN
+    "film": {
+      "id": "uuid",
+      "name": "string",
+      "country": "uuid",
+      "duration": "integer", 
+      "yearOfIssue": "datetime",
+      "age": "integer",
+      "linkImg": "string",
+      "linkKinopoisk": "string",
+      "linkVideo": "string",
+      "createdAt": "datetime",
+      "deletedAt": "datetime"
+    }
+  }
+Response
+  # If role values is admin
+  Header: 
+    Response code: 201
+  Body: {
+    "id": "uuid",
+    "name": "string",
+    "country": "uuid",
+    "duration": "integer",
+    "yearOfIssue": "datetime",
+    "age": "integer",
+    "linkImg": "string",
+    "linkKinopoisk": "string",
+    "linkVideo": "string",
+    "createdAt": "datetime",
+    "deletedAt": "datetime"
+  }
+  # If role values is user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/film/{id}
+  Method: DELETE
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN
+    "film": {
+      "id": "uuid",
+      "name": "string",
+      "country": "uuid",
+      "duration": "integer" ,
+      "yearOfIssue": "datetime",
+      "age": "integer",
+      "linkImg": "string",
+      "linkKinopoisk": "string",
+      "linkVideo": "string",
+      "createdAt": "datetime",
+      "deletedAt": "datetime"
+    }
+  }
+Response
+  # If role values is admin
+  Header: 
+    Response code: 201
+  Body: {
+    "id": "uuid",
+    "name": "string",
+    "country": "uuid",
+    "duration": "integer",
+    "yearOfIssue": "datetime",
+    "age": "integer",
+    "linkImg": "string",
+    "linkKinopoisk": "string",
+    "linkVideo": "string",
+    "createdAt": "datetime",
+    "deletedAt": "datetime"
+  }
+  # If role values is user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/film/{id}/review
+  Method: GET
+  Header: 
+  Body: {"token": AUTHORIZATION_TOKEN}
+Response
+  Header: 
+    Response code: 200
+  Body: [
+  {
+    "id": "uuid",
+    "film": "ссылка на ID film",
+    "user": "ссылка на ID user",
+    "message": "string",
+    "createdAt": "datetime",
+    "isApproved": "boolean",
+    "deletedAt": null
+  },
+  ...]
+
+  
+  Request
+  URL: /api/film/{id}/rating
+  Method: GET
+  Header: 
+  Body: {"token": AUTHORIZATION_TOKEN}
+Response
+  # If role values is admin
+  Header: 
+    Response code: 200
+  Body: [
+  {
+    "id": "uuid",
+    "film": "ссылка на ID film",
+    "user": "ссылка на ID user",
+    "ball": "integer",
+    "createdAt": "datetime"
+  },
+  ...]
+  # If role values is user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+    
+Request
+  URL: /api/category/
+  Method: GET
+  Header: 
+  Body: {"token": AUTHORIZATION_TOKEN}
+Response
+  # If role values is admin
+  Header: 
+    Response code: 200
+  Body: [
+  {
+    "id": "uuid",
+    "name": "string"
+    "parent": "ссылка на ID category, default: null"
+    "deletedAt": "datetime"
+  },
+  ...]
+  # If role values is user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/category/{id}
+  Method: GET
+  Header: 
+  Body: {"token": AUTHORIZATION_TOKEN}
+Response
+  # If role values is admin
+  Header: 
+    Response code: 200
+  Body: {
+    "id": "uuid",
+    "name": "string"
+    "parent": "ссылка на ID category, default: null"
+    "deletedAt": "datetime"
+  }
+  # If role values is user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/category/
+  Method: POST
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN,
+    "category": {
+    "id": "uuid",
+    "name": "string"
+    "parent": "ссылка на ID category, default: null"
+    "deletedAt": "datetime"
+    }
+  }
+Response
+  # If role values is admin
+  Header: 
+    Response code: 200
+  Body: {
+    "id": "uuid",
+    "name": "string"
+    "parent": "ссылка на ID category, default: null"
+    "deletedAt": "datetime"
+  }
+  # If role values is user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/category/{id}
+  Method: PUT
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN,
+    "category": {
+    "id": "uuid",
+    "name": "string"
+    "parent": "ссылка на ID category, default: null"
+    "deletedAt": "datetime"
+    }
+  }
+Response
+  # If role values is admin
+  Header: 
+    Response code: 200
+  Body: {
+    "id": "uuid",
+    "name": "string"
+    "parent": "ссылка на ID category, default: null"
+    "deletedAt": "datetime"
+  }
+  # If role values is user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/category/{id}
+  Method: DELETE
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN
+  }
+Response
+  # If role values is admin
+  Header: 
+    Response code: 200
+  Body: {
+    "id": "uuid",
+    "name": "string"
+    "parent": "ссылка на ID category, default: null"
+    "deletedAt": "datetime"
+  }
+  # If role values is user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/country/
+  Method: GET
+  Header: 
+  Body: {"token": AUTHORIZATION_TOKEN}
+Response
+  # If role values is admin
+  Header: 
+    Response code: 200
+  Body: [
+  {
+    "id": "uuid",
+    "name": "string"
+  },
+  ...]
+  # If role values is user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/country/{id}
+  Method: GET
+  Header: 
+  Body: {"token": AUTHORIZATION_TOKEN}
+Response
+  # If role values is admin
+  Header: 
+    Response code: 200
+  Body: {
+    "id": "uuid",
+    "name": "string"
+  }
+  # If role values is user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/country/
+  Method: POST
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN,
+    "country": {
+    "id": "uuid",
+    "name": "string"
+    }
+  }
+Response
+  # If role values is admin
+  Header: 
+    Response code: 200
+  Body: {
+    "id": "uuid",
+    "name": "string"
+  }
+  # If role values is user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/country/{id}
+  Method: PUT
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN,
+    "country": {
+    "id": "uuid",
+    "name": "string"
+    }
+  }
+Response
+  # If role values is admin
+  Header: 
+    Response code: 200
+  Body: {
+    "id": "uuid",
+    "name": "string"
+  }
+  # If role values is user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/country/{id}
+  Method: DELETE
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN
+  }
+Response
+  # If role values is admin
+  Header: 
+    Response code: 200
+  Body: {
+    "id": "uuid",
+    "name": "string"
+  }
+  # If role values is user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/film/{id}/review
+  Method: POST
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN
+    "review": {
+      "id": "uuid"
+      "film": "ссылка на ID film"
+      "user": "ссылка на ID user"
+      "message": "string"
+      "createdAt": "datetime"
+      "isApproved": "boolean"
+      "deletedAt": "datetime"
+    }
+  }
+Response
+  Header: 
+    Response code: 200
+  Body: {
+    "id": "uuid"
+    "film": "ссылка на ID film"
+    "user": "ссылка на ID user"
+    "message": "string"
+    "createdAt": "datetime"
+    "isApproved": "boolean"
+    "deletedAt": "datetime"
+  }
+
+
+Request
+  URL: /api/film/{id}/review/{id}
+  Method: GET
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN
+  }
+Response
+  # If review.user equals user.id or role equals admin
+  Header:
+    Response code: 200
+  Body: {
+    "id": "uuid"
+    "film": "ссылка на ID film"
+    "user": "ссылка на ID user"
+    "message": "string"
+    "createdAt": "datetime"
+    "isApproved": "boolean"
+    "deletedAt": "datetime"
+  }
+  # If review.user not equals user.id
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/film/{id}/review/{id}
+  Method: PUT
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN
+  }
+Response
+  # If review.user equals user.id or role equals admin
+  Header:
+    Response code: 200
+  Body: {
+    "id": "uuid"
+    "film": "ссылка на ID film"
+    "user": "ссылка на ID user"
+    "message": "string"
+    "createdAt": "datetime"
+    "isApproved": "boolean"
+    "deletedAt": "datetime"
+  }
+  # If review.user not equals user.id
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/film/{id}/rating/{id}
+  Method: DELETE
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN
+  }
+Response
+  # If review.user equals user.id or role equals admin
+  Header:
+    Response code: 200
+  Body: {
+    "id": "uuid"
+    "film": "ссылка на ID film"
+    "user": "ссылка на ID user"
+    "message": "string"
+    "createdAt": "datetime"
+    "isApproved": "boolean"
+    "deletedAt": "datetime"
+  }
+  # If review.user not equals user.id
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/film/rating/
+  Method: GET
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN
+  }
+Response
+  # If role equals admin
+  Header:
+    Response code: 200
+  Body: [
+  {
+    "id": "uuid"
+    "film": "ссылка на ID film"
+    "user": "ссылка на ID user"
+    "message": "string"
+    "createdAt": "datetime"
+    "isApproved": "boolean"
+    "deletedAt": "datetime"
+  },
+  ...]
+  # If If role equals admin user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/film/{id}/rating
+  Method: POST
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN
+    "rating": {
+    "id": "uuid"
+    "film": "ссылка на ID film"
+    "user": "ссылка на ID user"
+    "ball": "integer"
+    "createdAt": "datetime"
+  }
+  }
+Response
+  Header: 
+    Response code: 200
+  Body: {
+    "id": "uuid"
+    "film": "ссылка на ID film"
+    "user": "ссылка на ID user"
+    "ball": "integer"
+    "createdAt": "datetime"
+  }
+
+
+Request
+  URL: /api/film/{id}/rating/{id}
+  Method: GET
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN
+  }
+Response
+  # If review.user equals user.id or role equals admin
+  Header:
+    Response code: 200
+  Body: {
+    "id": "uuid"
+    "film": "ссылка на ID film"
+    "user": "ссылка на ID user"
+    "ball": "integer"
+    "createdAt": "datetime"
+  }
+  # If review.user not equals user.id
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/film/{id}/rating/{id}
+  Method: PUT
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN
+  }
+Response
+  # If review.user equals user.id or role equals admin
+  Header:
+    Response code: 200
+  Body: {
+    "id": "uuid"
+    "film": "ссылка на ID film"
+    "user": "ссылка на ID user"
+    "ball": "integer"
+    "createdAt": "datetime"
+  }
+  # If review.user not equals user.id
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/film/{id}/rating/{id}
+  Method: DELETE
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN
+  }
+Response
+  # If review.user equals user.id or role equals admin
+  Header:
+    Response code: 200
+  Body: {
+    "id": "uuid"
+    "film": "ссылка на ID film"
+    "user": "ссылка на ID user"
+    "ball": "integer"
+    "createdAt": "datetime"
+  }
+  # If review.user not equals user.id
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }
+
+
+Request
+  URL: /api/film/rating/
+  Method: GET
+  Header: 
+  Body: {
+    "token": AUTHORIZATION_TOKEN
+  }
+Response
+  # If role equals admin
+  Header:
+    Response code: 200
+  Body: [
+  {
+    "id": "uuid"
+    "film": "ссылка на ID film"
+    "user": "ссылка на ID user"
+    "ball": "integer"
+    "createdAt": "datetime"
+  },
+  ...]
+  # If If role equals admin user
+  Header: Response code: 401
+  Body: {
+    "message": "Permission denied"
+    }

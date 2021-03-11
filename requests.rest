@@ -1,0 +1,181 @@
+### POST /api/users
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{ 
+  "id": 1,
+  "fio": "John Doe",
+  "birthday": "1998-10-12",
+  "gender": "male",
+  "email": "john.doe@gmail.com",
+  "password": "mynameis John",
+  "role": "user",
+  "createdAt": "2021-01-10",
+  "deletedAt": null 
+}
+
+
+### GET /api/users/
+GET http://localhost:3000/api/users
+
+
+### GET /api/users/{id}
+GET http://localhost:3000/api/users/1
+
+
+### PUT /api/users/{id}
+PUT http://localhost:3000/api/users/1
+
+
+### DELETE /api/users/{id}
+DELETE http://localhost:3000/api/users/1
+
+
+### POST /api/films
+POST http://localhost:3000/api/films
+Content-Type: application/json
+
+{
+  "id": "uuid",
+  "name": "string",
+  "country": "uuid",
+  "duration": "integer",
+  "yearOfIssue": "datetime",
+  "age": "integer",
+  "linkImg": "string",
+  "linkKinopoisk": "string",
+  "linkVideo": "string",
+  "createdAt": "datetime",
+  "deletedAt": "datetime"
+}
+
+
+### GET /api/films
+GET http://localhost:3000/api/films
+
+
+### GET /api/films/{id}
+GET http://localhost:3000/api/films/1
+
+
+### PUT /api/films/{id}
+PUT http://localhost:3000/api/films/1
+
+
+### DELETE /api/films/{id}
+DELETE http://localhost:3000/api/films/1
+
+
+### POST /films/{id}/review
+POST http://localhost:3000/api/films/1/review
+Content-Type: application/json
+
+{
+  "id": "uuid",
+  "film": "ссылка на ID film",
+  "user": "ссылка на ID user",
+  "message": "string",
+  "createdAt": "datetime",
+  "isApproved": "boolean",
+  "deletedAt": null
+}
+
+
+### GET /films/{id}/review
+GET  http://localhost:3000/api/films/1/review/
+
+
+### GET /films/{id}/review/{reviewId}
+GET  http://localhost:3000/api/films/1/review/1
+
+
+### PUT /films/{id}/review/{reviewId}
+PUT  http://localhost:3000/api/films/1/review/1
+
+
+### DELETE /films/{id}/review/{reviewId}
+DELETE   http://localhost:3000/api/films/1/review/1
+
+
+### POST /films/{id}/rating
+POST http://localhost:3000/api/films/1/review
+Content-Type: application/json
+
+{
+  "id": "uuid",
+  "film": "ссылка на ID film",
+  "user": "ссылка на ID user",
+  "ball": "integer",
+  "createdAt": "datetime"
+}
+
+
+### GET /films/{id}/rating
+GET  http://localhost:3000/api/films/1/rating/
+
+
+### GET /films/{id}/rating/{reviewId}
+GET  http://localhost:3000/api/films/1/rating/1
+
+
+### PUT /films/{id}/rating/{reviewId}
+PUT  http://localhost:3000/api/films/1/rating/1
+
+
+### DELETE /films/{id}/rating/{reviewId}
+DELETE   http://localhost:3000/api/films/1/rating/1
+
+
+### POST /categories
+POST http://localhost:3000/api/categories
+Content-Type: application/json
+
+{
+  "id": "uuid",
+  "film": "ссылка на ID film",
+  "user": "ссылка на ID user",
+  "ball": "integer",
+  "createdAt": "datetime"
+}
+
+
+### GET /categories
+GET  http://localhost:3000/api/categories
+
+
+### GET /categories/{id}
+GET  http://localhost:3000/api/categories/1
+
+
+### PUT /categories/{id}
+PUT  http://localhost:3000/api/categories/1
+
+
+### DELETE /categories/{id}
+DELETE   http://localhost:3000/api/categories/1
+
+
+### POST /countries
+POST http://localhost:3000/api/countries
+Content-Type: application/json
+
+{
+  "id": "uuid",
+  "name": "string"
+}
+
+
+### GET /countries
+GET  http://localhost:3000/api/countries
+
+
+### GET /countries/{id}
+GET  http://localhost:3000/api/countries/1
+
+
+### PUT /countries/{id}
+PUT  http://localhost:3000/api/countries/1
+
+
+### DELETE /countries/{id}
+DELETE   http://localhost:3000/api/countries/1
