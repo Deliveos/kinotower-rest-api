@@ -4,12 +4,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
+var express_session_1 = __importDefault(require("express-session"));
 var config_1 = __importDefault(require("./config"));
 var routes_1 = __importDefault(require("./routes"));
 var logger_1 = __importDefault(require("./logger"));
 var app = express_1.default();
 // Middleware
 app.use(express_1.default.json());
+app.use(express_1.default.urlencoded());
+app.use(express_session_1.default({
+    name: config_1.default.SESSION_NAME,
+    resave: false,
+    rolling: true,
+    saveUninitialized: false,
+    secret: config_1.default.SESSION_SECRET,
+    cookie: {
+        httpOnly: true,
+        maxAge: 10 * 1000 * 60,
+        secure: config_1.default.NODE_ENV === "production" ? true : false
+    }
+}));
 // Logger
 app.use(function (req, res, next) {
     logger_1.default.debug({
