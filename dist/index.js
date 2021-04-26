@@ -8,10 +8,11 @@ var express_session_1 = __importDefault(require("express-session"));
 var config_1 = __importDefault(require("./config"));
 var routes_1 = __importDefault(require("./routes"));
 var logger_1 = __importDefault(require("./logger"));
+var index_1 = __importDefault(require("./database/index"));
 var app = express_1.default();
 // Middleware
 app.use(express_1.default.json());
-app.use(express_1.default.urlencoded());
+app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_session_1.default({
     name: config_1.default.SESSION_NAME,
     resave: false,
@@ -34,7 +35,9 @@ app.use(function (req, res, next) {
     next();
 });
 routes_1.default(app);
-app.listen(config_1.default.PORT, function () {
-    console.log("Server listen at " + config_1.default.BASE_URL + ":" + config_1.default.PORT);
+index_1.default(config_1.default.MONGO_URL, config_1.default.DB_NAME).then(function (db) {
+    app.listen(config_1.default.PORT, function () {
+        console.log("Server listen at " + config_1.default.BASE_URL + ":" + config_1.default.PORT);
+    });
 });
 //# sourceMappingURL=index.js.map

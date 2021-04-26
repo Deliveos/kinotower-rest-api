@@ -3,14 +3,13 @@ import sesion from "express-session";
 import config from "./config";
 import mountRoutes from "./routes";
 import logger from "./logger";
-
-
+import getConnection from "./database/index";
 
 const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded({extended: true}));
 app.use(sesion({
   name: config.SESSION_NAME,
   resave: false, 
@@ -34,6 +33,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 mountRoutes(app);
 
-app.listen(config.PORT, ()=> {
-  console.log(`Server listen at ${config.BASE_URL}:${config.PORT}`);
+getConnection(config.MONGO_URL, config.DB_NAME).then(db => {
+  app.listen(config.PORT, ()=> {
+    console.log(`Server listen at ${config.BASE_URL}:${config.PORT}`);
+  })
 })
