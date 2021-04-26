@@ -49,13 +49,11 @@ function getConnection(url, dbName) {
                     _a.trys.push([0, 2, , 3]);
                     return [4 /*yield*/, mongoose_1.default.connect(url + "/" + dbName, {
                             useNewUrlParser: true,
-                            useCreateIndex: true,
-                            useFindAndModify: false,
                             useUnifiedTopology: true
                         })];
                 case 1:
                     db = _a.sent();
-                    return [3 /*break*/, 3];
+                    return [2 /*return*/, db.connection];
                 case 2:
                     e_1 = _a.sent();
                     console.log(e_1);

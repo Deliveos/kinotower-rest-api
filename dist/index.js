@@ -35,9 +35,10 @@ app.use(function (req, res, next) {
     next();
 });
 routes_1.default(app);
-index_1.default(config_1.default.MONGO_URL, config_1.default.DB_NAME).then(function (db) {
+index_1.default(config_1.default.MONGO_URL, config_1.default.DB_NAME).then(function (connection) {
     app.listen(config_1.default.PORT, function () {
         console.log("Server listen at " + config_1.default.BASE_URL + ":" + config_1.default.PORT);
+        console.log("Connected to '" + (connection === null || connection === void 0 ? void 0 : connection.db.databaseName) + "' database");
     });
 });
 //# sourceMappingURL=index.js.map

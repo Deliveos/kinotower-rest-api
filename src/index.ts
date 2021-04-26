@@ -4,6 +4,7 @@ import config from "./config";
 import mountRoutes from "./routes";
 import logger from "./logger";
 import getConnection from "./database/index";
+import { connection } from "mongoose";
 
 const app = express();
 
@@ -33,8 +34,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 mountRoutes(app);
 
-getConnection(config.MONGO_URL, config.DB_NAME).then(db => {
+getConnection(config.MONGO_URL, config.DB_NAME).then(connection => {
   app.listen(config.PORT, ()=> {
     console.log(`Server listen at ${config.BASE_URL}:${config.PORT}`);
+    console.log(`Connected to '${connection?.db.databaseName}' database`);
   })
 })

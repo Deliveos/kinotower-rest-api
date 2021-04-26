@@ -2,60 +2,51 @@ import { Router } from "express";
 import path from "path";
 import config from "../config";
 import { redirectToHome, redirectToLogin } from "../middleware/redirect";
+import { User } from "../models/User"
 
 const router: Router = Router();
 
-const users = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john.doe@gmail.com",
-    password: "password"
-  },
-  {
-    id: 2,
-    name: "Max Paddincton",
-    email: "maxpad@gmail.com",
-    password: "welcome"
-  }
-]
-
 // POST /users/register
-router.post("/users/register", redirectToHome, (req, res)=> {
-  const { name, email, password } = req.body;
-  if (name && email && password) {
-    const exists = users.some(user => user.email === email);
+router.post("/users/register", redirectToHome, async (req, res)=> {
+  const { name, birthday, gender, email, password } = req.body;
+  const exists = await User.findOne({email});
     if (!exists) {
-      const user = {
-        id: users.length +1,
-        name,
-        email,
-        password
-      };
-      users.push(user)
-      req.session.userId = user.id;
-      res.redirect("/");
+      console.log(exists);
+      const user = new User({
+        fio: name,
+        birthday: birthday,
+        gender: gender,
+        email: email,
+        //TODO: add password hash
+        password: password
+      }) 
+        const newUser = await user.save();
+        req.session.userId = newUser._id;
+        return res.redirect("/"); 
+      
+      // const userId = await user.save;
     } else {
       res.redirect("/api/users/login");
     }
-  }
-  res.redirect("/api/users/register");
-})
+    res.redirect("/api/users/register");
+});
 
 // GET /users/register
 router.get("/users/register", redirectToHome, (req, res)=> {
-  console.log(__dirname);
   res.sendFile(path.join((__dirname + '/../../pages/register.html')))
-})
+});
 
 // POST /users/login
-router.post("/users/login", redirectToHome, (req, res)=> {
+router.post("/users/login", redirectToHome, async (req, res)=> {
   const { email, password } = req.body;
   if (email && password) {
-    const user = users.find(user => user.email === email && user.password === password);
+    const user = await User.findOne({email});
     if (user) {
-      req.session.userId = user.id;
-      res.redirect("/");
+      //FIXME: hash
+      if (password === user.password) {
+        req.session.userId = user._id;
+        return res.redirect("/");
+      }
     }
   }
   res.redirect("/api/users/login");
@@ -70,6 +61,9 @@ router.get("/users/login", redirectToHome, (req, res)=> {
 // POST /users/logout
 router.post("/users/logout", redirectToLogin, (req, res)=> {
   req.session.destroy(err => {
+    if (err) {
+      throw new Error(err);
+    }
     return res.redirect("/");
   });
   res.clearCookie(config.SESSION_NAME);
@@ -90,7 +84,7 @@ router.get("/users", (req, res)=> {
     "deletedAt": null 
   },
   "..."]);
-})
+});
 
 // POST /users
 router.post("/users", (req, res)=> {
