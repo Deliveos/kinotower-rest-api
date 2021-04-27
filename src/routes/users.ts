@@ -1,27 +1,29 @@
 import { Router } from "express";
 import path from "path";
 import config from "../config";
+import { encryption } from "../middleware/encryption";
+import { onlyAdmin } from "../middleware/isadmin";
 import { redirectToHome, redirectToLogin } from "../middleware/redirect";
-import { User } from "../models/User"
+import { User } from "../models/User";
 
 const router: Router = Router();
 
 // POST /users/register
-router.post("/users/register", redirectToHome, async (req, res)=> {
-  const { name, birthday, gender, email, password } = req.body;
+router.post("/users/register", redirectToHome, encryption, async (req, res)=> {
+  const { fio, birthday, gender, email, password } = req.body;
   const exists = await User.findOne({email});
     if (!exists) {
       console.log(exists);
       const user = new User({
-        fio: name,
-        birthday: birthday,
-        gender: gender,
-        email: email,
-        //TODO: add password hash
-        password: password
-      }) 
+        fio,
+        birthday,
+        gender,
+        email,
+        password
+      }); 
         const newUser = await user.save();
         req.session.userId = newUser._id;
+        req.session.role = newUser.role;
         return res.redirect("/"); 
       
       // const userId = await user.save;
@@ -37,26 +39,27 @@ router.get("/users/register", redirectToHome, (req, res)=> {
 });
 
 // POST /users/login
-router.post("/users/login", redirectToHome, async (req, res)=> {
+router.post("/users/login", redirectToHome, encryption, async (req, res)=> {
   const { email, password } = req.body;
   if (email && password) {
     const user = await User.findOne({email});
+    console.log(user);
     if (user) {
-      //FIXME: hash
       if (password === user.password) {
         req.session.userId = user._id;
+        req.session.role = user.role;
         return res.redirect("/");
       }
     }
   }
   res.redirect("/api/users/login");
-})
+});
 
 // GET /users/login
 router.get("/users/login", redirectToHome, (req, res)=> {
   console.log(__dirname);
   res.sendFile(path.join((__dirname + '/../../pages/login.html')))
-})
+});
 
 // POST /users/logout
 router.post("/users/logout", redirectToLogin, (req, res)=> {
@@ -67,67 +70,49 @@ router.post("/users/logout", redirectToLogin, (req, res)=> {
     return res.redirect("/");
   });
   res.clearCookie(config.SESSION_NAME);
-})
-
-// GET /users
-router.get("/users", (req, res)=> {
-  res.json([
-    { 
-    "id": 1,
-    "fio": "John Doe",
-    "birthday": "1998-10-12",
-    "gender": "male",
-    "email": "john.doe@gmail.com",
-    "password": "mynameis John",
-    "role": "user",
-    "createdAt": "2021-01-10",
-    "deletedAt": null 
-  },
-  "..."]);
 });
 
-// POST /users
-router.post("/users", (req, res)=> {
-  res.status(201).json(req.body.user);
-})
+// GET /users
+router.get("/users", onlyAdmin, async (req, res)=> {
+  const users = await User.find();
+  if (users) {
+    return res.json(users);
+  }
+  res.json({});
+});
 
 // GET /users/{id}
-router.get("/users/:id", (req, res)=> {
-  res.status(200).json({ 
-    "id": 1,
-    "fio": "John Doe",
-    "birthday": "1998-10-12",
-    "gender": "male",
-    "email": "john.doe@gmail.com",
-    "password": "mynameis John",
-    "role": "user",
-    "createdAt": "2021-01-10",
-    "deletedAt": null 
-  });
+router.get("/users/:id", redirectToLogin, async (req, res)=> {
+  if(req.session.role === "admin") {
+    const user = await User.findOne({_id: req.params.id});
+    return res.json(user);
+  }
+  if (req.session.userId === req.params.id) {
+    const user = await User.findOne({_id: req.params.id});
+    return res.json(user);
+  }
+  res.redirect("/");
 })
 
 // PUT /users/{id}
-router.put("/users/:id", (req, res)=> {
-  res.status(200).json({ 
-    "id": 1,
-    "fio": "John Doe",
-    "birthday": "1998-10-12",
-    "gender": "male",
-    "email": "john.doe@gmail.com",
-    "password": "mynameis John",
-    "role": "user",
-    "createdAt": "2021-01-10",
-    "deletedAt": null 
-  });
+router.put("/users/:id", redirectToLogin, encryption, async (req, res)=> {
+  console.log(req.body);
+  if(req.session.role === "admin") {
+    const user = await User.updateOne({_id: req.params.id}, req.body);
+    return res.json(user);
+  }
+  if (req.session.userId === req.params.id) {
+    const user = await User.updateOne({_id: req.params.id}, req.body);
+    return res.json(user);
+  }
+  res.redirect("/");
 })
 
 
 // DELETE /users/{id}
-router.delete("/users/:id", (req, res)=> {
-  res.send(`User ${req.params.id} will be deleted`);
+router.delete("/users/:id", onlyAdmin, async (req, res)=> {
+  const user = await User.deleteOne({_id: req.params.id}, req.body);
+  return res.json(user);
 })
-
-
-
 
 export = router;

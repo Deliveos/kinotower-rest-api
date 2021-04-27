@@ -4,7 +4,6 @@ import config from "./config";
 import mountRoutes from "./routes";
 import logger from "./logger";
 import getConnection from "./database/index";
-import { connection } from "mongoose";
 
 const app = express();
 

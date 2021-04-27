@@ -41,33 +41,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 var express_1 = require("express");
 var path_1 = __importDefault(require("path"));
 var config_1 = __importDefault(require("../config"));
+var encryption_1 = require("../middleware/encryption");
+var isadmin_1 = require("../middleware/isadmin");
 var redirect_1 = require("../middleware/redirect");
 var User_1 = require("../models/User");
 var router = express_1.Router();
 // POST /users/register
-router.post("/users/register", redirect_1.redirectToHome, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, name, birthday, gender, email, password, exists, user, newUser;
+router.post("/users/register", redirect_1.redirectToHome, encryption_1.encryption, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, fio, birthday, gender, email, password, exists, user, newUser;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                _a = req.body, name = _a.name, birthday = _a.birthday, gender = _a.gender, email = _a.email, password = _a.password;
+                _a = req.body, fio = _a.fio, birthday = _a.birthday, gender = _a.gender, email = _a.email, password = _a.password;
                 return [4 /*yield*/, User_1.User.findOne({ email: email })];
             case 1:
                 exists = _b.sent();
                 if (!!exists) return [3 /*break*/, 3];
                 console.log(exists);
                 user = new User_1.User({
-                    fio: name,
+                    fio: fio,
                     birthday: birthday,
                     gender: gender,
                     email: email,
-                    //TODO: add password hash
                     password: password
                 });
                 return [4 /*yield*/, user.save()];
             case 2:
                 newUser = _b.sent();
                 req.session.userId = newUser._id;
+                req.session.role = newUser.role;
                 return [2 /*return*/, res.redirect("/")];
             case 3:
                 res.redirect("/api/users/login");
@@ -83,7 +85,7 @@ router.get("/users/register", redirect_1.redirectToHome, function (req, res) {
     res.sendFile(path_1.default.join((__dirname + '/../../pages/register.html')));
 });
 // POST /users/login
-router.post("/users/login", redirect_1.redirectToHome, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+router.post("/users/login", redirect_1.redirectToHome, encryption_1.encryption, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, email, password, user;
     return __generator(this, function (_b) {
         switch (_b.label) {
@@ -93,10 +95,11 @@ router.post("/users/login", redirect_1.redirectToHome, function (req, res) { ret
                 return [4 /*yield*/, User_1.User.findOne({ email: email })];
             case 1:
                 user = _b.sent();
+                console.log(user);
                 if (user) {
-                    //FIXME: hash
                     if (password === user.password) {
                         req.session.userId = user._id;
+                        req.session.role = user.role;
                         return [2 /*return*/, res.redirect("/")];
                     }
                 }
@@ -123,57 +126,79 @@ router.post("/users/logout", redirect_1.redirectToLogin, function (req, res) {
     res.clearCookie(config_1.default.SESSION_NAME);
 });
 // GET /users
-router.get("/users", function (req, res) {
-    res.json([
-        {
-            "id": 1,
-            "fio": "John Doe",
-            "birthday": "1998-10-12",
-            "gender": "male",
-            "email": "john.doe@gmail.com",
-            "password": "mynameis John",
-            "role": "user",
-            "createdAt": "2021-01-10",
-            "deletedAt": null
-        },
-        "..."
-    ]);
-});
-// POST /users
-router.post("/users", function (req, res) {
-    res.status(201).json(req.body.user);
-});
+router.get("/users", isadmin_1.onlyAdmin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var users;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, User_1.User.find()];
+            case 1:
+                users = _a.sent();
+                if (users) {
+                    return [2 /*return*/, res.json(users)];
+                }
+                res.json({});
+                return [2 /*return*/];
+        }
+    });
+}); });
 // GET /users/{id}
-router.get("/users/:id", function (req, res) {
-    res.status(200).json({
-        "id": 1,
-        "fio": "John Doe",
-        "birthday": "1998-10-12",
-        "gender": "male",
-        "email": "john.doe@gmail.com",
-        "password": "mynameis John",
-        "role": "user",
-        "createdAt": "2021-01-10",
-        "deletedAt": null
+router.get("/users/:id", redirect_1.redirectToLogin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var user, user;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!(req.session.role === "admin")) return [3 /*break*/, 2];
+                return [4 /*yield*/, User_1.User.findOne({ _id: req.params.id })];
+            case 1:
+                user = _a.sent();
+                return [2 /*return*/, res.json(user)];
+            case 2:
+                if (!(req.session.userId === req.params.id)) return [3 /*break*/, 4];
+                return [4 /*yield*/, User_1.User.findOne({ _id: req.params.id })];
+            case 3:
+                user = _a.sent();
+                return [2 /*return*/, res.json(user)];
+            case 4:
+                res.redirect("/");
+                return [2 /*return*/];
+        }
     });
-});
+}); });
 // PUT /users/{id}
-router.put("/users/:id", function (req, res) {
-    res.status(200).json({
-        "id": 1,
-        "fio": "John Doe",
-        "birthday": "1998-10-12",
-        "gender": "male",
-        "email": "john.doe@gmail.com",
-        "password": "mynameis John",
-        "role": "user",
-        "createdAt": "2021-01-10",
-        "deletedAt": null
+router.put("/users/:id", redirect_1.redirectToLogin, encryption_1.encryption, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var user, user;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                console.log(req.body);
+                if (!(req.session.role === "admin")) return [3 /*break*/, 2];
+                return [4 /*yield*/, User_1.User.updateOne({ _id: req.params.id }, req.body)];
+            case 1:
+                user = _a.sent();
+                return [2 /*return*/, res.json(user)];
+            case 2:
+                if (!(req.session.userId === req.params.id)) return [3 /*break*/, 4];
+                return [4 /*yield*/, User_1.User.updateOne({ _id: req.params.id }, req.body)];
+            case 3:
+                user = _a.sent();
+                return [2 /*return*/, res.json(user)];
+            case 4:
+                res.redirect("/");
+                return [2 /*return*/];
+        }
     });
-});
+}); });
 // DELETE /users/{id}
-router.delete("/users/:id", function (req, res) {
-    res.send("User " + req.params.id + " will be deleted");
-});
+router.delete("/users/:id", isadmin_1.onlyAdmin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var user;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, User_1.User.deleteOne({ _id: req.params.id }, req.body)];
+            case 1:
+                user = _a.sent();
+                return [2 /*return*/, res.json(user)];
+        }
+    });
+}); });
 module.exports = router;
 //# sourceMappingURL=users.js.map
