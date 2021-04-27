@@ -28,4 +28,4 @@ const schema = new Schema({
   id: true,
 });
 
-export const User = model("Review", schema);
+export const Review = model("Review", schema);

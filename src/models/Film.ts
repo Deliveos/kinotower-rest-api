@@ -46,4 +46,4 @@ const schema = new Schema({
   id: true,
 });
 
-export const User = model("Film", schema);
+export const Film = model("Film", schema);

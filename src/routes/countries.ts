@@ -1,48 +1,31 @@
 import { Router } from "express";
+import { onlyAdmin } from "../middleware/isadmin";
+import { Country } from "../models/Country";
 
 const router: Router = Router();
 
 // POST /countries
-router.post("/countries", (req,res)=> {
-  res.status(201).json({
-    "id": "uuid",
-    "name": "string"
-  });
+router.post("/countries", onlyAdmin, async (req,res)=> {
+  const country = new Country(req.body);
+  res.json(await country.save());
 });
 
 
 // GET /countries
-router.get("/countries", (req,res)=> {
-  res.json([
-    {
-      "id": "uuid",
-      "name": "string"
-    },
-    "..."]);
-});
-
-
-// GET /countries/{id}
-router.get("/countries/:id", (req,res)=> {
-  res.json({
-    "id": "uuid",
-    "name": "string"
-  });
+router.get("/countries", onlyAdmin, async (req,res)=> {
+  res.json(await Country.find());
 });
 
 
 // PUT /countries/{id}
-router.put("/countries/:id", (req,res)=> {
-  res.json({
-    "id": "uuid",
-    "name": "string"
-  });
+router.put("/countries/:id", onlyAdmin, async (req,res)=> {
+  res.json(await Country.updateOne({_id: req.params.id}, req.body));
 });
 
 
 // DELETE /countries/{id}
-router.delete("/countries/:id", (req,res)=> {
-  res.send(`Country ${req.params.id} will be deleted`);
+router.delete("/countries/:id", onlyAdmin, async (req,res)=> {
+  res.json(await Country.deleteOne({_id: req.params.id}));
 });
 
 

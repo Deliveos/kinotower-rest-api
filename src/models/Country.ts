@@ -9,4 +9,4 @@ const schema = new Schema({
   id: true,
 });
 
-export const User = model("Country", schema);
+export const Country = model("Country", schema);

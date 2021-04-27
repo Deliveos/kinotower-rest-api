@@ -18,4 +18,4 @@ const schema = new Schema({
   id: true,
 });
 
-export const User = model("Category", schema);
+export const Category = model("Category", schema);
