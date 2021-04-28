@@ -2,8 +2,9 @@ import { Router } from "express";
 import { onlyAdmin } from "../middleware/isadmin";
 import { redirectToLogin } from "../middleware/redirect";
 import {Film} from "../models/Film";
+import { Rating } from "../models/Rating";
 import { Review } from "../models/Review";
-import { User } from "../models/User";
+import { average } from "../services/average";
 
 const router: Router = Router();
 
@@ -31,15 +32,17 @@ router.get("/films", async (req, res)=> {
 
 // GET /films/{id}
 router.get("/films/:id", async (req, res)=> {
+  const rating = average(await Rating.find({film: req.params.id}));
   const film = await Film.findOne({_id: req.params.id});
-  res.json(film);
+  res.json({...film, rating});
 });
 
 
 // PUT /films/{id}
 router.put("/films/:id", onlyAdmin, async (req, res)=> {
+  const rating = average(await Rating.find({film: req.params.id}));
   const film = await Film.updateOne({_id: req.params.id}, req.body);
-  res.json(film);
+  res.json({...film, rating});
 });
 
 
@@ -60,7 +63,7 @@ router.post("/films/:id/review", redirectToLogin, async (req, res)=> {
   const review = new Review({
     ...req.body,
     user: req.session.userId,
-    film: req.params.id
+    film: req.params.id,
   });
   res.json(review);
 });
@@ -74,21 +77,6 @@ router.get("/films/:id/review", async (req, res)=> {
   }
   const reviews = await Review.find({film: req.params.id, isApproved: true});
   res.json(reviews);
-});
-
-
-// GET /film/{id}/review/{id}
-router.get("/films/:id/review/:reviewId", (req, res)=> {
-  
-  res.json({
-    "id": "uuid",
-    "film": "ссылка на ID film",
-    "user": "ссылка на ID user",
-    "message": "string",
-    "createdAt": "datetime",
-    "isApproved": "boolean",
-    "deletedAt": null
-  });
 });
 
 
@@ -119,74 +107,46 @@ router.delete("/films/:id/review/:reviewId", redirectToLogin, async (req, res)=>
 
 
 // POST /film/{id}/rating
-router.post("/films/:id/rating", async (req, res)=> {
-  res.status(201).json(
-    {
-      "id": "uuid",
-      "film": "ссылка на ID film",
-      "user": "ссылка на ID user",
-      "ball": "integer",
-      "createdAt": "datetime"
-    });
+router.post("/films/:id/rating", redirectToLogin, async (req, res)=> {
+  const rating = new Rating({
+    film: req.params.id,
+    user: req.session.userId,
+    ball: req.body.ball,
+    createdAt: new Date()
+  });
+  res.json(await rating.save());
 });
 
 
 // GET /films/rating
-router.get("/films/rating", async (req, res)=> {
-  res.json([{
-    "id": "uuid",
-    "film": "ссылка на ID film",
-    "user": "ссылка на ID user",
-    "ball": "integer",
-    "createdAt": "datetime"
-  },
-  "..."]);
+router.get("/films/rating", onlyAdmin, async (req, res)=> {
+  res.json(await Rating.find());
 });
 
-
 // GET /films/{id}/rating
-router.get("/films/:id/rating", async (req, res)=> {
-  res.json([
-    {
-      "id": "uuid",
-      "film": "ссылка на ID film",
-      "user": "ссылка на ID user",
-      "ball": "integer",
-      "createdAt": "datetime"
-    },
-    "..."]);
+router.get("/films/:id/rating", onlyAdmin, async (req, res)=> {
+  res.json(await Rating.find({fiml: req.params.id}));
 });
 
 
 // GET /films/{id}/rating/{id}
 router.get("/films/:id/rating/:ratingId", async (req, res)=> {
-  res.json(
-    {
-      "id": "uuid",
-      "film": "ссылка на ID film",
-      "user": "ссылка на ID user",
-      "ball": "integer",
-      "createdAt": "datetime"
-    });
+  const rating = await Rating.find({_id: req.params.ratingsId, film: req.params.id, user: req.session.userId});
+
 });
 
 
 // PUT /films/{id}/rating/{id}
 router.put("/films/:id/rating/:ratingId", async (req, res)=> {
-  res.json(
-    {
-      "id": "uuid",
-      "film": "ссылка на ID film",
-      "user": "ссылка на ID user",
-      "ball": "integer",
-      "createdAt": "datetime"
-    });
+  const rating = await Rating.updateOne({_id: req.params.ratingsId, film: req.params.id, user: req.session.userId}, req.body);
+  return res.json(rating);
 });
 
 
 // DELETE /films/{id}/rating/{id}
 router.delete("/films/:id/rating/:ratingId", async (req, res)=> {
-  res.send(`Ratig ${req.params.ratingId} will be deleted`);
+  const rating = await Rating.deleteOne({_id: req.params.ratingsId, film: req.params.id, user: req.session.userId});
+  return rating;
 });
 
 export = router;
